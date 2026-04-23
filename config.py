@@ -3,6 +3,7 @@ import os
 MODEL_PATH = os.getenv("MODEL_PATH", "models/tinyllama.gguf")
 
 EMBED_MODEL = os.getenv("EMBED_MODEL", "models/all-MiniLM-L6-v2")
+EMBED_DEVICE = os.getenv("EMBED_DEVICE", "cpu")
 
 TOP_K = 2
 MAX_TOKENS = 200
