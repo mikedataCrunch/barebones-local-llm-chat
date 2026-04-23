@@ -1,5 +1,28 @@
 # barebones-local-llm-chat
 
+## Setup
+
+### Option A: pip (recommended on Ubuntu 22.04)
+```bash
+sudo apt-get update
+sudo apt-get install -y python3-venv python3-dev build-essential cmake ninja-build
+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+python -m pip install -r requirements.txt
+```
+
+### Option B: Conda (optional)
+```bash
+conda env create -f environment.yml
+conda activate barebones-local-llm-chat
+```
+
+Notes:
+- `llama-cpp-python` may compile native code; the build deps above help if a wheel isn’t available.
+- For GPU builds on Ubuntu, you’ll typically want CUDA/toolkit installed and then build `llama-cpp-python` accordingly.
+
 
 ## Models
 Conversational: tinyllama-1.1b-chat.Q4_K_M.gguf
@@ -22,4 +45,3 @@ python -m pip install -U \
   "cmake>=3.28" \
   "ninja>=1.11"
 ```
-
