@@ -25,6 +25,8 @@ Notes:
 - Gradio defaults to binding `127.0.0.1`. To expose on LAN set `GRADIO_SERVER_NAME=0.0.0.0`. To enable public sharing set `GRADIO_SHARE=true`.
 - If you see linker errors about `libgomp.so.1` / OpenMP while installing `llama-cpp-python` (no sudo), install the runtime in your env (e.g. `conda install -c conda-forge libgomp`) or disable OpenMP via `CMAKE_ARGS="-DGGML_OPENMP=OFF"`.
 - If Gradio fails with `ImportError: cannot import name 'HfFolder' from huggingface_hub`, downgrade hub: `pip install 'huggingface-hub<0.24'` (already pinned in `requirements.txt` / `environment.yml`).
+- If you hit `Model path does not exist`, set `MODEL_PATH` to the actual `.gguf` file (or a directory containing it). Example: `MODEL_PATH=models/TinyLlama-1.1B-Chat-v1.0-GGUF python app.py`.
+- If Torch warns about an old CUDA driver, force CPU embeddings via `EMBED_DEVICE=cpu`.
 
 
 ## Models
