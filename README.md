@@ -23,6 +23,7 @@ Notes:
 - `llama-cpp-python` may compile native code; the build deps above help if a wheel isn’t available.
 - For GPU builds on Ubuntu, you’ll typically want CUDA/toolkit installed and then build `llama-cpp-python` accordingly.
 - Gradio defaults to binding `127.0.0.1`. To expose on LAN set `GRADIO_SERVER_NAME=0.0.0.0`. To enable public sharing set `GRADIO_SHARE=true`.
+- If you see linker errors about `libgomp.so.1` / OpenMP while installing `llama-cpp-python` (no sudo), install the runtime in your env (e.g. `conda install -c conda-forge libgomp`) or disable OpenMP via `CMAKE_ARGS="-DGGML_OPENMP=OFF"`.
 
 
 ## Models
