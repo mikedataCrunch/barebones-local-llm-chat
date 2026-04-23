@@ -5,6 +5,18 @@ class Retriever:
         self.documents = documents
 
     def retrieve(self, query: str, k: int):
+        if not self.documents:
+            return []
+
+        k = max(0, min(int(k), len(self.documents)))
+        if k == 0:
+            return []
+
         q_emb = self.embedder.encode([query])
-        D, I = self.vectorstore.search(q_emb, k)
-        return [self.documents[i] for i in I[0]]
+        _, indices = self.vectorstore.search(q_emb, k)
+
+        results = []
+        for idx in indices[0].tolist():
+            if 0 <= idx < len(self.documents):
+                results.append(self.documents[idx])
+        return results
