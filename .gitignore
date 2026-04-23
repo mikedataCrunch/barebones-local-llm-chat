@@ -1,0 +1,4 @@
+.huggingface_mirror/
+.ipynb_checkpoints/
+__pycache__/
+models/
