@@ -11,4 +11,4 @@ dependencies:
       - gradio>=4,<5
       - llama-cpp-python
       - sentence-transformers
-      - huggingface-hub
+      - huggingface-hub<0.24

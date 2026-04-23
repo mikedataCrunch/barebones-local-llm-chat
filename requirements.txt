@@ -11,5 +11,5 @@ faiss-cpu
 numpy>=1.26,<2
 
 # Used by `utils/hf_model_downloader.py`
-huggingface-hub
-
+# Gradio (as of 4.x) imports `HfFolder` which was removed from newer hub releases.
+huggingface-hub<0.24
