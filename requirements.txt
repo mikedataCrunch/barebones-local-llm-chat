@@ -1,0 +1,15 @@
+# Core runtime dependencies for `app.py`
+gradio>=4,<5
+llama-cpp-python
+sentence-transformers
+
+# RAG / vector search
+# Note: `faiss-cpu` can be easier to install via conda-forge on macOS/Apple Silicon.
+faiss-cpu
+
+# Common numeric dependency; pin a compatible major range to reduce solver conflicts.
+numpy>=1.26,<2
+
+# Used by `utils/hf_model_downloader.py`
+huggingface-hub
+
