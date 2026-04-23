@@ -6,4 +6,5 @@ class Embedder:
         self.model = SentenceTransformer(EMBED_MODEL)
 
     def encode(self, texts):
-        return self.model.encode(texts)
+        # SentenceTransformer returns a numpy array; force float32 for FAISS compatibility.
+        return self.model.encode(texts).astype("float32", copy=False)
