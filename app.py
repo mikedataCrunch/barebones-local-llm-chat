@@ -1,5 +1,6 @@
 import gradio as gr
 
+import re
 import time
 from pathlib import Path
 
@@ -95,8 +96,34 @@ def chat_fn(message, history):
 
         partial = ""
         print("chat_fn generation start", flush=True)
+        word_re = re.compile(r"\S+\s*")
+        carry = ""
         for chunk in llm.generate_stream(prompt):
-            partial += chunk
+            carry += chunk
+
+            matches = list(word_re.finditer(carry))
+            if not matches:
+                continue
+
+            if carry[-1].isspace():
+                cutoff = matches[-1].end()
+            elif len(matches) >= 2:
+                cutoff = matches[-2].end()
+            else:
+                cutoff = 0
+
+            if cutoff <= 0:
+                continue
+
+            ready = carry[:cutoff]
+            carry = carry[cutoff:]
+
+            for m in word_re.finditer(ready):
+                partial += m.group(0)
+                yield partial
+
+        if carry:
+            partial += carry
             yield partial
     except Exception as e:
         yield f"Error while generating response: {type(e).__name__}: {e}"
