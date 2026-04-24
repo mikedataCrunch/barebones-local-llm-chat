@@ -29,6 +29,20 @@ Notes:
 - If you hit `Model path does not exist`, set `MODEL_PATH` to the actual `.gguf` file (or a directory containing it). Example: `MODEL_PATH=models/TinyLlama-1.1B-Chat-v1.0-GGUF python app.py`.
 - If Torch warns about an old CUDA driver, force CPU embeddings via `EMBED_DEVICE=cpu`.
 
+## Build the local vector index (recommended)
+
+This project persists the FAISS index on disk so you don’t re-embed documents on every start.
+
+Build (or rebuild) the index:
+```bash
+python -m rag.build_index --docs data/documents.txt --out data/index
+```
+
+By default `app.py` will load `data/index` if present. If the index is missing/outdated, RAG context will be empty unless you opt into auto-build on startup:
+```bash
+AUTO_BUILD_INDEX=true python app.py
+```
+
 ## Fixing bad `fastapi`/`starlette` pins (existing env)
 
 If you previously installed `fastapi==...` / `starlette==...` manually, remove them and reinstall from this repo’s constraints:
