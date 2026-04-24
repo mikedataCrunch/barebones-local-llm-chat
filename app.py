@@ -50,12 +50,19 @@ print("System ready.")
 # -------------------------
 def chat_fn(message, history):
     started = time.time()
+    print(f"chat_fn start: message_len={len(message) if message else 0}", flush=True)
     try:
+        t0 = time.time()
         context_docs = retriever.retrieve(message, TOP_K) if retriever else []
         context = "\n".join(context_docs)
+        print(f"chat_fn after retrieve: {time.time()-t0:.2f}s docs={len(context_docs)}", flush=True)
+
+        t1 = time.time()
         prompt = build_prompt(context, message, history=history)
+        print(f"chat_fn after prompt: {time.time()-t1:.2f}s prompt_len={len(prompt)}", flush=True)
 
         partial = ""
+        print("chat_fn generation start", flush=True)
         for chunk in llm.generate_stream(prompt):
             partial += chunk
             yield partial
@@ -63,7 +70,7 @@ def chat_fn(message, history):
         yield f"Error while generating response: {type(e).__name__}: {e}"
     finally:
         elapsed = time.time() - started
-        print(f"chat_fn completed in {elapsed:.2f}s")
+        print(f"chat_fn completed in {elapsed:.2f}s", flush=True)
 
 # -------------------------
 # UI
