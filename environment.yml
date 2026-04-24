@@ -9,6 +9,8 @@ dependencies:
   - pip
   - pip:
       - gradio>=4,<5
+      - fastapi<1
+      - starlette<1
       - llama-cpp-python
       - sentence-transformers
       - huggingface-hub<0.24

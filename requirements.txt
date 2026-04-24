@@ -1,5 +1,7 @@
 # Core runtime dependencies for `app.py`
 gradio>=4,<5
+fastapi<1
+starlette<1
 llama-cpp-python
 sentence-transformers
 
