@@ -1,5 +1,7 @@
 import gradio as gr
 
+import time
+
 from llm.model import LocalLLM
 from llm.prompt import build_prompt
 from rag.embedder import Embedder
@@ -47,14 +49,21 @@ print("System ready.")
 # Chat function
 # -------------------------
 def chat_fn(message, history):
-    context_docs = retriever.retrieve(message, TOP_K) if retriever else []
-    context = "\n".join(context_docs)
+    started = time.time()
+    try:
+        context_docs = retriever.retrieve(message, TOP_K) if retriever else []
+        context = "\n".join(context_docs)
+        prompt = build_prompt(context, message, history=history)
 
-    prompt = build_prompt(context, message, history=history)
-
-    response = llm.generate(prompt)
-
-    return response
+        partial = ""
+        for chunk in llm.generate_stream(prompt):
+            partial += chunk
+            yield partial
+    except Exception as e:
+        yield f"Error while generating response: {type(e).__name__}: {e}"
+    finally:
+        elapsed = time.time() - started
+        print(f"chat_fn completed in {elapsed:.2f}s")
 
 # -------------------------
 # UI
@@ -69,4 +78,5 @@ demo.launch(
     server_name=GRADIO_SERVER_NAME,
     server_port=GRADIO_SERVER_PORT,
     share=GRADIO_SHARE,
+    show_error=True,
 )

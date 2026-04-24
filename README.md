@@ -58,6 +58,11 @@ Remote/container (create a public share link):
 GRADIO_SHARE=true python app.py
 ```
 
+If generation is extremely slow or appears “stuck”, force CPU-only inference:
+```bash
+N_GPU_LAYERS=0 GRADIO_SHARE=true python app.py
+```
+
 
 ## Models
 Conversational: tinyllama-1.1b-chat.Q4_K_M.gguf

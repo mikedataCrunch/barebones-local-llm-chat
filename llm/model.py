@@ -50,10 +50,20 @@ class LocalLLM:
             verbose=False
         )
 
-    def generate(self, prompt: str) -> str:
-        output = self.model(
+    def generate_stream(self, prompt: str):
+        stream = self.model(
             prompt,
             max_tokens=MAX_TOKENS,
-            stop=["</s>"]
+            stop=["</s>"],
+            stream=True,
         )
-        return output["choices"][0]["text"].strip()
+        for event in stream:
+            text = event["choices"][0].get("text", "")
+            if text:
+                yield text
+
+    def generate(self, prompt: str) -> str:
+        chunks = []
+        for chunk in self.generate_stream(prompt):
+            chunks.append(chunk)
+        return "".join(chunks).strip()

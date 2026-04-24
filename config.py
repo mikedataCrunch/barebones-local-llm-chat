@@ -8,8 +8,9 @@ EMBED_DEVICE = os.getenv("EMBED_DEVICE", "cpu")
 TOP_K = 2
 MAX_TOKENS = 200
 
-N_CTX = 2048
-N_GPU_LAYERS = -1  # use GPU if available
+N_CTX = int(os.getenv("N_CTX", "2048"))
+# llama-cpp-python: -1 means "all layers on GPU" (if supported). Set 0 to force CPU.
+N_GPU_LAYERS = int(os.getenv("N_GPU_LAYERS", "-1"))
 
 DOCS_PATH = os.getenv("DOCS_PATH", "data/documents.txt")
 
