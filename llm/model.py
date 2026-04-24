@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from llama_cpp import Llama
-from config import MODEL_PATH, MAX_TOKENS, N_CTX, N_GPU_LAYERS
+from config import MODEL_PATH, MAX_TOKENS, N_BATCH, N_CTX, N_GPU_LAYERS, N_THREADS
 
 
 def _discover_gguf_paths(root: Path) -> list[Path]:
@@ -43,10 +43,19 @@ def resolve_model_path(model_path: str) -> str:
 
 class LocalLLM:
     def __init__(self):
+        resolved = resolve_model_path(MODEL_PATH)
+        print(
+            "Initializing llama.cpp "
+            f"(model={resolved!r}, n_ctx={N_CTX}, n_gpu_layers={N_GPU_LAYERS}, "
+            f"n_threads={N_THREADS}, n_batch={N_BATCH})",
+            flush=True,
+        )
         self.model = Llama(
-            model_path=resolve_model_path(MODEL_PATH),
+            model_path=resolved,
             n_ctx=N_CTX,
             n_gpu_layers=N_GPU_LAYERS,
+            n_threads=N_THREADS,
+            n_batch=N_BATCH,
             verbose=False
         )
 
