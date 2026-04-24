@@ -1,13 +1,23 @@
 import gradio as gr
 
 import time
+from pathlib import Path
 
 from llm.model import LocalLLM
 from llm.prompt import build_prompt
 from rag.embedder import Embedder
 from rag.vectorstore import VectorStore
 from rag.retriever import Retriever
-from config import DOCS_PATH, GRADIO_SERVER_NAME, GRADIO_SERVER_PORT, GRADIO_SHARE, TOP_K
+from rag.index_store import file_sha256, index_paths, load_index
+from config import (
+    AUTO_BUILD_INDEX,
+    DOCS_PATH,
+    GRADIO_SERVER_NAME,
+    GRADIO_SERVER_PORT,
+    GRADIO_SHARE,
+    INDEX_DIR,
+    TOP_K,
+)
 
 # -------------------------
 # Load components
@@ -23,22 +33,44 @@ def load_documents(path: str):
 print("Loading embedder...")
 embedder = Embedder()
 
-print("Loading documents...")
-documents = load_documents(DOCS_PATH)
-print(f"Loaded {len(documents)} documents from {DOCS_PATH}")
-
 retriever = None
-if documents:
-    print("Embedding documents...")
-    embeddings = embedder.encode(documents)
-
-    print("Building vector store...")
-    vectorstore = VectorStore(embeddings.shape[1])
-    vectorstore.add(embeddings)
-
-    retriever = Retriever(embedder, vectorstore, documents)
+index_p = index_paths(INDEX_DIR)
+if index_p["faiss"].exists() and index_p["docs"].exists() and index_p["meta"].exists():
+    try:
+        print(f"Loading persisted index from {INDEX_DIR}...")
+        index, stored_docs, meta = load_index(INDEX_DIR)
+        current_sha = file_sha256(DOCS_PATH) if Path(DOCS_PATH).exists() else ""
+        if current_sha and meta.docs_sha256 != current_sha:
+            print(
+                f"Warning: index is out of date for {DOCS_PATH}. "
+                f"Run `python -m rag.build_index --docs {DOCS_PATH} --out {INDEX_DIR}`."
+            )
+        else:
+            vectorstore = VectorStore(index.d)
+            vectorstore.index = index
+            retriever = Retriever(embedder, vectorstore, stored_docs)
+            print(f"Loaded index with {len(stored_docs)} documents (dim={index.d})")
+    except Exception as e:
+        print(f"Warning: failed to load index from {INDEX_DIR}: {type(e).__name__}: {e}")
 else:
-    print("Warning: no documents loaded; RAG context will be empty.")
+    print(f"No persisted index found in {INDEX_DIR}")
+
+if retriever is None and AUTO_BUILD_INDEX:
+    print("AUTO_BUILD_INDEX=true, building index on startup...")
+    documents = load_documents(DOCS_PATH)
+    print(f"Loaded {len(documents)} documents from {DOCS_PATH}")
+
+    if documents:
+        print("Embedding documents...")
+        embeddings = embedder.encode(documents)
+
+        print("Building vector store...")
+        vectorstore = VectorStore(embeddings.shape[1])
+        vectorstore.add(embeddings)
+
+        retriever = Retriever(embedder, vectorstore, documents)
+    else:
+        print("Warning: no documents loaded; RAG context will be empty.")
 
 print("Loading LLM...")
 llm = LocalLLM()
