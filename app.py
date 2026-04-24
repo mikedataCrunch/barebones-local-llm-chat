@@ -17,6 +17,8 @@ from config import (
     GRADIO_SERVER_PORT,
     GRADIO_SHARE,
     INDEX_DIR,
+    LOG_PROMPT,
+    LOG_RAG,
     TOP_K,
 )
 
@@ -86,13 +88,29 @@ def chat_fn(message, history):
     print(f"chat_fn start: message_len={len(message) if message else 0}", flush=True)
     try:
         t0 = time.time()
-        context_docs = retriever.retrieve(message, TOP_K) if retriever else []
+        if LOG_RAG:
+            print(f"[RAG] retrieve start: top_k={TOP_K} query={message!r}", flush=True)
+
+        if retriever:
+            context_docs = retriever.retrieve(message, TOP_K)
+        else:
+            context_docs = []
+            if LOG_RAG:
+                print("[RAG] retrieve skipped: retriever not initialized (no index loaded)", flush=True)
+
         context = "\n".join(context_docs)
         print(f"chat_fn after retrieve: {time.time()-t0:.2f}s docs={len(context_docs)}", flush=True)
+        if LOG_RAG and context_docs:
+            for i, doc in enumerate(context_docs):
+                print(f"[RAG] doc[{i}]:\n{doc}\n---", flush=True)
 
         t1 = time.time()
         prompt = build_prompt(context, message, history=history)
         print(f"chat_fn after prompt: {time.time()-t1:.2f}s prompt_len={len(prompt)}", flush=True)
+        if LOG_PROMPT:
+            print("[LLM] prompt begin", flush=True)
+            print(prompt, flush=True)
+            print("[LLM] prompt end", flush=True)
 
         partial = ""
         print("chat_fn generation start", flush=True)

@@ -22,3 +22,7 @@ DOCS_PATH = os.getenv("DOCS_PATH", "data/documents.txt")
 GRADIO_SERVER_NAME = os.getenv("GRADIO_SERVER_NAME", "127.0.0.1")
 GRADIO_SERVER_PORT = int(os.getenv("GRADIO_SERVER_PORT", "7860"))
 GRADIO_SHARE = os.getenv("GRADIO_SHARE", "false").strip().lower() in {"1", "true", "yes"}
+
+# Logging (stdout)
+LOG_RAG = os.getenv("LOG_RAG", "false").strip().lower() in {"1", "true", "yes"}
+LOG_PROMPT = os.getenv("LOG_PROMPT", "false").strip().lower() in {"1", "true", "yes"}
