@@ -19,6 +19,7 @@ from config import (
     INDEX_DIR,
     LOG_PROMPT,
     LOG_RAG,
+    REQUIRE_INDEX,
     TOP_K,
 )
 
@@ -74,11 +75,21 @@ if retriever is None and AUTO_BUILD_INDEX:
         retriever = Retriever(embedder, vectorstore, documents)
     else:
         print("Warning: no documents loaded; RAG context will be empty.")
+elif retriever is None:
+    msg = (
+        "RAG is disabled (no index loaded). Build the index with:\n"
+        f"  python -m rag.build_index --docs {DOCS_PATH} --out {INDEX_DIR}\n"
+        "Or set AUTO_BUILD_INDEX=true to build on startup."
+    )
+    if REQUIRE_INDEX:
+        raise RuntimeError(msg)
+    print(f"Warning: {msg}")
 
 print("Loading LLM...")
 llm = LocalLLM()
 
 print("System ready.")
+print(f"Logging: LOG_RAG={LOG_RAG} LOG_PROMPT={LOG_PROMPT}", flush=True)
 
 # -------------------------
 # Chat function

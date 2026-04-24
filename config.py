@@ -26,3 +26,4 @@ GRADIO_SHARE = os.getenv("GRADIO_SHARE", "false").strip().lower() in {"1", "true
 # Logging (stdout)
 LOG_RAG = os.getenv("LOG_RAG", "false").strip().lower() in {"1", "true", "yes"}
 LOG_PROMPT = os.getenv("LOG_PROMPT", "false").strip().lower() in {"1", "true", "yes"}
+REQUIRE_INDEX = os.getenv("REQUIRE_INDEX", "false").strip().lower() in {"1", "true", "yes"}
