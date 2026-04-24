@@ -99,3 +99,19 @@ python -m pip install -U \
   "cmake>=3.28" \
   "ninja>=1.11"
 ```
+
+### CUDA (NVIDIA GPU) build
+
+By default, `pip install llama-cpp-python` may install a CPU-only build. For NVIDIA GPUs, rebuild it with CUDA enabled (in the same env you run `app.py` from):
+
+```bash
+bash scripts/install_llama_cuda.sh
+```
+
+Verify GPU usage during generation:
+- `watch -n 0.5 nvidia-smi` (you should see a `python` process + non-zero GPU memory)
+
+Run with GPU offload enabled:
+```bash
+N_GPU_LAYERS=-1 N_BATCH=2048 python app.py
+```
